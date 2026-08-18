@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { houses } from "@/data/houses";
+
 import { GlassPanel, PageShell, Section, SectionHero } from "@/components/nexus/primitives";
 import { HouseCard } from "@/components/nexus/cards";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { Scene } from "@/components/three/Scene";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/houses/")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/houses/")({
 });
 
 function HousesPage() {
+  const houses = useContentSection("houses");
   const ranked = [...houses].sort((a, b) => b.points - a.points);
   const allZero = houses.every((h) => h.points === 0);
   const maxPoints = Math.max(1, ...houses.map((h) => h.points));

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { events } from "@/data/content";
+
 import { GlassPanel, PageShell, Section, SectionHero } from "@/components/nexus/primitives";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/calendar")({
 const groups = ["Exam", "Test", "Project", "Competition", "Birthday", "School", "House"] as const;
 
 function CalendarPage() {
+  const events = useContentSection("events");
   return (
     <PageShell>
       <SectionHero

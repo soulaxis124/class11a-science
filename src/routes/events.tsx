@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { events } from "@/data/content";
+
 import { GlassPanel, PageShell, Section, SectionHero } from "@/components/nexus/primitives";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/events")({
 });
 
 function EventsPage() {
+  const events = useContentSection("events");
   return (
     <PageShell>
       <SectionHero

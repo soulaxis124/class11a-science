@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { X } from "lucide-react";
-import { gallery, galleryCategories } from "@/data/content";
+import { galleryCategories } from "@/data/content";
 import type { GalleryItem } from "@/data/types";
 import { PageShell, PhotoSlot, Section, SectionHero } from "@/components/nexus/primitives";
 import { GalleryCard } from "@/components/nexus/cards";
 import { cn } from "@/lib/utils";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const gallery = useContentSection("gallery");
   const [cat, setCat] = useState("All");
   const [open, setOpen] = useState<GalleryItem | null>(null);
   const items = cat === "All" ? gallery : gallery.filter((g) => g.category === cat);

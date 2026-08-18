@@ -16,6 +16,7 @@ import {
 } from "@/lib/content-store";
 import { GlassPanel } from "@/components/nexus/primitives";
 import { NexusLogo } from "@/components/nexus/Logo";
+import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { houses } from "@/data/houses";
 import { useHouseColors } from "@/lib/house-theme";
@@ -415,6 +416,7 @@ function SectionEditor({
 }) {
   const [draft, setDraft] = useState<Row[]>(() => structuredClone(rows));
   const [jsonMode, setJsonMode] = useState(false);
+  const imageFields: string[] = ["photo", "media", "image", "cover"];
   const [jsonText, setJsonText] = useState(() => JSON.stringify(rows, null, 2));
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [open, setOpen] = useState<number | null>(0);

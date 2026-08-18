@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { classInfo, classStats, monitors, teacher } from "@/data/classInfo";
-import { houses } from "@/data/houses";
-import { students, displayName } from "@/data/students";
-import { greenCabinet } from "@/data/greenCabinet";
+import { displayName } from "@/data/students";
 import { GlassPanel, PageShell, Section, SectionHero, StatCounter } from "@/components/nexus/primitives";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/yearbook")({
   head: () => ({
@@ -22,6 +21,9 @@ export const Route = createFileRoute("/yearbook")({
 });
 
 function YearbookPage() {
+  const houses = useContentSection("houses");
+  const students = useContentSection("students");
+  const greenCabinet = useContentSection("greenCabinet");
   return (
     <PageShell>
       <SectionHero

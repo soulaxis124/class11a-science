@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { students, displayName } from "@/data/students";
-import { houses } from "@/data/houses";
+import { displayName } from "@/data/students";
 import type { HouseId, StudentRole } from "@/data/types";
 import { GlassPanel, PageShell, Section, SectionHero } from "@/components/nexus/primitives";
 import { StudentCard } from "@/components/nexus/cards";
 import { Scene } from "@/components/three/Scene";
 import { cn } from "@/lib/utils";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/students/")({
   head: () => ({
@@ -37,6 +37,8 @@ const roleFilters: (StudentRole | "All")[] = [
 ];
 
 function StudentsPage() {
+  const students = useContentSection("students");
+  const houses = useContentSection("houses");
   const [query, setQuery] = useState("");
   const [house, setHouse] = useState<HouseId | "All">("All");
   const [role, setRole] = useState<StudentRole | "All">("All");

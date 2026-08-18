@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { timeline } from "@/data/content";
+
 import { PageShell, Section, SectionHero } from "@/components/nexus/primitives";
 import { TimelineCard } from "@/components/nexus/cards";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/timeline")({
   head: () => ({
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/timeline")({
 });
 
 function TimelinePage() {
+  const timeline = useContentSection("timeline");
   return (
     <PageShell>
       <SectionHero

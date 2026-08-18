@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { projects } from "@/data/content";
+
 import { PageShell, Section, SectionHero } from "@/components/nexus/primitives";
 import { ProjectCard } from "@/components/nexus/cards";
 import { cn } from "@/lib/utils";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 const subjects = ["All", "Physics", "Chemistry", "Biology", "Mathematics", "Interdisciplinary"];
 
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/projects")({
 });
 
 function ProjectsPage() {
+  const projects = useContentSection("projects");
   const [subject, setSubject] = useState("All");
   const list = subject === "All" ? projects : projects.filter((p) => p.subject === subject);
 

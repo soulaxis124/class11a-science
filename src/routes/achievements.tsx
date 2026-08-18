@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { achievements, achievementCategories } from "@/data/content";
+import { achievementCategories } from "@/data/content";
 import { PageShell, Section, SectionHero } from "@/components/nexus/primitives";
 import { AchievementCard } from "@/components/nexus/cards";
 import { cn } from "@/lib/utils";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/achievements")({
   head: () => ({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/achievements")({
 });
 
 function AchievementsPage() {
+  const achievements = useContentSection("achievements");
   const [cat, setCat] = useState<string>("All");
   const list = cat === "All" ? achievements : achievements.filter((a) => a.category === cat);
 

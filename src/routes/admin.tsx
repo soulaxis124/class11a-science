@@ -434,6 +434,11 @@ function SectionEditor({
     );
   }
 
+  function setField(index: number, field: string, value: unknown) {
+    setDraft((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
+  }
+
+
   return (
     <GlassPanel className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -536,6 +541,18 @@ function SectionEditor({
                           ? ""
                           : String(value);
                       const long = field === "description" || field === "intro" || field === "quote";
+                      if (imageFields.includes(field)) {
+                        return (
+                          <ImageField
+                            key={field}
+                            label={field}
+                            folder={sectionKey}
+                            value={typeof value === "string" ? value : null}
+                            onChange={(next) => setField(i, field, next)}
+                            className="sm:col-span-2"
+                          />
+                        );
+                      }
                       return (
                         <label key={field} className={cn("block", long && "sm:col-span-2")}>
                           <span className="label-mono">{field}</span>
@@ -556,6 +573,16 @@ function SectionEditor({
                         </label>
                       );
                     })}
+                    {!imageFields.some((f) => f in row) && (
+                      <ImageField
+                        label="photo"
+                        folder={sectionKey}
+                        value={typeof row["photo"] === "string" ? (row["photo"] as string) : null}
+                        onChange={(next) => setField(i, "photo", next)}
+                        className="sm:col-span-2"
+                      />
+                    )}
+
                     {!fixedLength && (
                       <div className="sm:col-span-2">
                         <button

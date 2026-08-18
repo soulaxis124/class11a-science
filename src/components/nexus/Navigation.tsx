@@ -4,6 +4,8 @@ import { Menu, X } from "lucide-react";
 import { navItems } from "@/data/navigation";
 import { cn } from "@/lib/utils";
 import { NexusIcon } from "@/components/nexus/icons";
+import { NexusMark, NexusLogo } from "@/components/nexus/Logo";
+
 
 export function Navigation() {
   const [open, setOpen] = useState(false);
@@ -40,9 +42,10 @@ export function Navigation() {
             scrolled ? "glass mx-3" : "mx-3 border border-transparent",
           )}
         >
-          <Link to="/" className="group flex items-center gap-3">
-            <span className="relative flex size-9 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 font-display text-sm text-primary">
-              </span>
+          <Link to="/" aria-label="Science Nexus — Class 11-A home" className="group flex items-center gap-3">
+            <span className="relative flex size-10 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary transition-transform duration-500 group-hover:scale-105">
+              <NexusMark className="size-7" animated />
+            </span>
             <span className="leading-none">
               <span className="block font-display text-sm font-semibold uppercase tracking-[0.18em]">
                 Class 11-A
@@ -52,6 +55,7 @@ export function Navigation() {
               </span>
             </span>
           </Link>
+
 
           <ul className="hidden items-center gap-0.5 xl:flex">
             {navItems.slice(1, 9).map((item) => (
@@ -149,9 +153,11 @@ function NavLinkItem({ to, label }: { to: string; label: string }) {
 export function Footer() {
   return (
     <footer className="relative z-10 border-t border-border/60 px-6 py-10 text-center">
-      <p className="font-display text-sm uppercase tracking-[0.24em] text-foreground/80">
+      <NexusLogo className="justify-center" />
+      <p className="mt-6 font-display text-sm uppercase tracking-[0.24em] text-foreground/80">
         Class 11-A · Science
       </p>
+
       <p className="mt-2 text-xs text-muted-foreground">
         One Class. Four Houses. One Scientific Journey.
       </p>

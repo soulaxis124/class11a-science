@@ -434,6 +434,11 @@ function SectionEditor({
     );
   }
 
+  function setField(index: number, field: string, value: unknown) {
+    setDraft((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
+  }
+
+
   return (
     <GlassPanel className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">

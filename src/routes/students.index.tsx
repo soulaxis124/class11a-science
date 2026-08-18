@@ -60,7 +60,7 @@ function StudentsPage() {
     return [...list].sort((a, b) =>
       sort === "roll" ? a.roll - b.roll : displayName(a).localeCompare(displayName(b)),
     );
-  }, [query, house, role, sort]);
+  }, [students, query, house, role, sort]);
 
   return (
     <PageShell>

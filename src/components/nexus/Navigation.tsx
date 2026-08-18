@@ -153,9 +153,11 @@ function NavLinkItem({ to, label }: { to: string; label: string }) {
 export function Footer() {
   return (
     <footer className="relative z-10 border-t border-border/60 px-6 py-10 text-center">
-      <p className="font-display text-sm uppercase tracking-[0.24em] text-foreground/80">
+      <NexusLogo className="justify-center" />
+      <p className="mt-6 font-display text-sm uppercase tracking-[0.24em] text-foreground/80">
         Class 11-A · Science
       </p>
+
       <p className="mt-2 text-xs text-muted-foreground">
         One Class. Four Houses. One Scientific Journey.
       </p>

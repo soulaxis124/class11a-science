@@ -1,6 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { houses, getHouse } from "@/data/houses";
-import { students } from "@/data/students";
+import { houses as staticHouses, getHouse } from "@/data/houses";
 import type { HouseId } from "@/data/types";
 import {
   EmptyState,
@@ -11,8 +10,9 @@ import {
   SectionHero,
 } from "@/components/nexus/primitives";
 import { StudentCard } from "@/components/nexus/cards";
+import { useContentSection } from "@/hooks/useSiteContent";
 
-const validIds = houses.map((h) => h.id) as string[];
+const validIds = staticHouses.map((h) => h.id) as string[];
 
 export const Route = createFileRoute("/houses/$house")({
   loader: ({ params }) => {
@@ -46,7 +46,10 @@ export const Route = createFileRoute("/houses/$house")({
 });
 
 function HousePage() {
-  const { house } = Route.useLoaderData();
+  const houses = useContentSection("houses");
+  const students = useContentSection("students");
+  const { house: loadedHouse } = Route.useLoaderData();
+  const house = houses.find((h) => h.id === loadedHouse.id) ?? loadedHouse;
   const accent = `var(${house.colorVar})`;
   const members = students.filter((s) => s.house === house.id);
 

@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { classInfo, classStats, teacher, monitors } from "@/data/classInfo";
-import { houses } from "@/data/houses";
+
 import { GlassPanel, PageShell, Section, SectionHero, StatCounter } from "@/components/nexus/primitives";
 import { Scene } from "@/components/three/Scene";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/class")({
   head: () => ({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/class")({
 });
 
 function ClassPage() {
+  const houses = useContentSection("houses");
   return (
     <PageShell>
       <div className="relative">

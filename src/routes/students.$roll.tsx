@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getStudent, displayName } from "@/data/students";
+import { useContentSection } from "@/hooks/useSiteContent";
 import { getHouse, houseColor } from "@/data/houses";
 import {
   Field,
@@ -43,7 +44,9 @@ export const Route = createFileRoute("/students/$roll")({
 });
 
 function StudentProfile() {
-  const { student } = Route.useLoaderData();
+  const liveStudents = useContentSection("students");
+  const { student: loadedStudent } = Route.useLoaderData();
+  const student = liveStudents.find((s) => s.roll === loadedStudent.roll) ?? loadedStudent;
   const house = getHouse(student.house);
   const accent = houseColor(student.house);
 

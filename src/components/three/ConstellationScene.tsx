@@ -3,7 +3,8 @@ import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { useNavigate } from "@tanstack/react-router";
 import * as THREE from "three";
-import { students, displayName } from "@/data/students";
+import { students as staticStudents, displayName } from "@/data/students";
+import { useContentSection } from "@/hooks/useSiteContent";
 import { getHouse } from "@/data/houses";
 import { readCssColor } from "@/lib/house-theme";
 import { GOLD, MolecularDust, NexusCanvas, SAGE, SILVER, Starfield } from "./shared";
@@ -13,7 +14,8 @@ function Node({ position, roll }: { position: [number, number, number]; roll: nu
   const [hovered, setHovered] = useState(false);
   const ref = useRef<THREE.Group>(null);
   const light = useRef<THREE.PointLight>(null);
-  const student = students[roll - 1]!;
+  const liveStudents = useContentSection("students");
+  const student = liveStudents.find((s) => s.roll === roll) ?? staticStudents[roll - 1]!;
   const house = getHouse(student.house);
   // Node color follows the student's house palette (configurable, never hard-coded).
   const color = useMemo(
@@ -103,9 +105,9 @@ function Cluster() {
   const ref = useRef<THREE.Group>(null);
   const positions = useMemo(() => {
     // Fibonacci sphere — even, scientific distribution of the 33 nodes
-    const n = students.length;
+    const n = staticStudents.length;
     const golden = Math.PI * (3 - Math.sqrt(5));
-    return students.map((_, i) => {
+    return staticStudents.map((_, i) => {
       const y = 1 - (i / (n - 1)) * 2;
       const r = Math.sqrt(Math.max(0, 1 - y * y));
       const theta = golden * i;

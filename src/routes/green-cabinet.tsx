@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { greenCabinet, greenMission } from "@/data/greenCabinet";
+import { greenMission } from "@/data/greenCabinet";
 import {
   GlassPanel,
   PageShell,
@@ -10,6 +10,7 @@ import {
   StatCounter,
 } from "@/components/nexus/primitives";
 import { Scene } from "@/components/three/Scene";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/green-cabinet")({
   head: () => ({
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/green-cabinet")({
 });
 
 function GreenCabinetPage() {
+  const greenCabinet = useContentSection("greenCabinet");
   const named = greenCabinet.filter((m) => m.name).length;
 
   return (

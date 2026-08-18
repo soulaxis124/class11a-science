@@ -4,6 +4,8 @@ import { Menu, X } from "lucide-react";
 import { navItems } from "@/data/navigation";
 import { cn } from "@/lib/utils";
 import { NexusIcon } from "@/components/nexus/icons";
+import { NexusMark } from "@/components/nexus/Logo";
+
 
 export function Navigation() {
   const [open, setOpen] = useState(false);

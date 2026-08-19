@@ -22,6 +22,7 @@ import { Route as MonitorsRouteImport } from './routes/monitors'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ScienceLabRouteImport } from './routes/science-lab'
 import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as TeachersRouteImport } from './routes/teachers'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as YearbookRouteImport } from './routes/yearbook'
 import { Route as HousesIndexRouteImport } from './routes/houses.index'
@@ -95,6 +96,11 @@ const TeacherRoute = TeacherRouteImport.update({
   path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeachersRoute = TeachersRouteImport.update({
+  id: '/teachers',
+  path: '/teachers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TimelineRoute = TimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/science-lab': typeof ScienceLabRoute
   '/teacher': typeof TeacherRoute
+  '/teachers': typeof TeachersRoute
   '/timeline': typeof TimelineRoute
   '/yearbook': typeof YearbookRoute
   '/houses/$house': typeof HousesHouseRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/science-lab': typeof ScienceLabRoute
   '/teacher': typeof TeacherRoute
+  '/teachers': typeof TeachersRoute
   '/timeline': typeof TimelineRoute
   '/yearbook': typeof YearbookRoute
   '/houses/$house': typeof HousesHouseRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/science-lab': typeof ScienceLabRoute
   '/teacher': typeof TeacherRoute
+  '/teachers': typeof TeachersRoute
   '/timeline': typeof TimelineRoute
   '/yearbook': typeof YearbookRoute
   '/houses/$house': typeof HousesHouseRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/science-lab'
     | '/teacher'
+    | '/teachers'
     | '/timeline'
     | '/yearbook'
     | '/houses/$house'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/science-lab'
     | '/teacher'
+    | '/teachers'
     | '/timeline'
     | '/yearbook'
     | '/houses/$house'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/science-lab'
     | '/teacher'
+    | '/teachers'
     | '/timeline'
     | '/yearbook'
     | '/houses/$house'
@@ -281,6 +293,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRoute
   ScienceLabRoute: typeof ScienceLabRoute
   TeacherRoute: typeof TeacherRoute
+  TeachersRoute: typeof TeachersRoute
   TimelineRoute: typeof TimelineRoute
   YearbookRoute: typeof YearbookRoute
   HousesHouseRoute: typeof HousesHouseRoute
@@ -383,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teachers': {
+      id: '/teachers'
+      path: '/teachers'
+      fullPath: '/teachers'
+      preLoaderRoute: typeof TeachersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/timeline': {
       id: '/timeline'
       path: '/timeline'
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRoute,
   ScienceLabRoute: ScienceLabRoute,
   TeacherRoute: TeacherRoute,
+  TeachersRoute: TeachersRoute,
   TimelineRoute: TimelineRoute,
   YearbookRoute: YearbookRoute,
   HousesHouseRoute: HousesHouseRoute,

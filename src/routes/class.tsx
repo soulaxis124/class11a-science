@@ -3,7 +3,7 @@ import { classInfo, classStats, teacher, monitors } from "@/data/classInfo";
 
 import { GlassPanel, PageShell, Section, SectionHero, StatCounter } from "@/components/nexus/primitives";
 import { Scene } from "@/components/three/Scene";
-import { useContentSection } from "@/hooks/useSiteContent";
+import { useContentSection, useClassText } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/class")({
   head: () => ({
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/class")({
 
 function ClassPage() {
   const houses = useContentSection("houses");
+  const text = useClassText();
   return (
     <PageShell>
       <div className="relative">
@@ -35,8 +36,11 @@ function ClassPage() {
         <SectionHero
           eyebrow="Classroom"
           title="Our Class"
-          subtitle={classInfo.primaryConcept}
-          description="One classroom, thirty-three minds, four houses and a single scientific journey. This is the core of the Science Nexus."
+          subtitle={text("primaryConcept", classInfo.primaryConcept)}
+          description={text(
+            "about",
+            "One classroom, thirty-three minds, four houses and a single scientific journey. This is the core of the Science Nexus.",
+          )}
         />
       </div>
 
@@ -50,7 +54,11 @@ function ClassPage() {
 
       <Section title="Class Identity">
         <div className="grid gap-4 md:grid-cols-3">
-          {[classInfo.primaryConcept, classInfo.secondaryConcept, classInfo.tertiaryConcept].map(
+          {[
+            text("primaryConcept", classInfo.primaryConcept),
+            text("secondaryConcept", classInfo.secondaryConcept),
+            text("tertiaryConcept", classInfo.tertiaryConcept),
+          ].map(
             (line, i) => (
               <GlassPanel key={i} hover className="p-6">
                 <p className="label-mono">Concept {i + 1}</p>

@@ -9,7 +9,9 @@ import {
   Section,
   SectionHero,
 } from "@/components/nexus/primitives";
-import { StudentCard } from "@/components/nexus/cards";
+import { PersonCard, StudentCard } from "@/components/nexus/cards";
+import { HouseCrest } from "@/components/nexus/HouseCrest";
+import { Reveal } from "@/components/nexus/Reveal";
 import { useContentSection } from "@/hooks/useSiteContent";
 
 const validIds = staticHouses.map((h) => h.id) as string[];

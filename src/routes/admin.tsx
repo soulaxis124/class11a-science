@@ -19,7 +19,7 @@ import { NexusLogo } from "@/components/nexus/Logo";
 import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { houses } from "@/data/houses";
-import { useHouseColors } from "@/lib/house-theme";
+import type { House, HouseColors, HouseId } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
@@ -375,7 +375,7 @@ function Dashboard({ email }: { email: string }) {
                   </GlassPanel>
                 ))}
               </div>
-              <HouseColorPanel />
+              <HouseColorPanel rows={content.houses} onSave={save} />
             </div>
           ) : (
             <SectionEditor
@@ -675,13 +675,54 @@ function BulkTools({
 /* house customization — colors are data, applied site-wide            */
 /* ------------------------------------------------------------------ */
 
-function HouseColorPanel() {
-  const { map, update, reset } = useHouseColors();
+function HouseColorPanel({
+  rows,
+  onSave,
+}: {
+  rows: House[];
+  onSave: (key: ContentKey, rows: unknown[]) => Promise<boolean>;
+}) {
+  const [saving, setSaving] = useState(false);
   const fields = [
     { key: "primary" as const, label: "Primary" },
     { key: "secondary" as const, label: "Secondary" },
     { key: "accent" as const, label: "Accent" },
   ];
+
+  const map = houses.reduce(
+    (acc, h) => {
+      const stored = rows.find((r) => r.id === h.id);
+      acc[h.id] = { ...h.colors, ...(stored?.colors ?? {}) };
+      return acc;
+    },
+    {} as Record<HouseId, HouseColors>,
+  );
+
+  async function persist(next: Record<HouseId, HouseColors>) {
+    setSaving(true);
+    const merged = houses.map((h) => {
+      const stored = rows.find((r) => r.id === h.id);
+      return { ...h, ...(stored ?? {}), colors: next[h.id] };
+    });
+    await onSave("houses", merged);
+    setSaving(false);
+  }
+
+  function update(id: HouseId, key: keyof HouseColors, value: string) {
+    void persist({ ...map, [id]: { ...map[id], [key]: value } });
+  }
+
+  function reset() {
+    void persist(
+      houses.reduce(
+        (acc, h) => {
+          acc[h.id] = { ...h.colors };
+          return acc;
+        },
+        {} as Record<HouseId, HouseColors>,
+      ),
+    );
+  }
 
   return (
     <GlassPanel className="p-5">
@@ -696,9 +737,10 @@ function HouseColorPanel() {
         </div>
         <button
           onClick={reset}
-          className="rounded-xl border border-border px-3 py-2 text-xs hover:bg-surface/60"
+          disabled={saving}
+          className="rounded-xl border border-border px-3 py-2 text-xs hover:bg-surface/60 disabled:opacity-60"
         >
-          Reset to defaults
+          {saving ? "Saving…" : "Reset to defaults"}
         </button>
       </div>
 

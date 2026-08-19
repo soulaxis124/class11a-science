@@ -116,3 +116,48 @@ export interface LabSection {
   tagline: string;
   entries: { title: string | null; note: string | null }[];
 }
+
+/** Subject teacher — fully admin managed. */
+export interface Teacher {
+  id: string;
+  subject: string | null;
+  name: string | null;
+  /** e.g. "Class Teacher" */
+  role: string | null;
+  photo: string | null;
+  bio: string | null;
+  qualification: string | null;
+  quote: string | null;
+  order: number;
+}
+
+export interface Principal {
+  id: string;
+  name: string | null;
+  photo: string | null;
+  introduction: string | null;
+  message: string | null;
+  quote: string | null;
+  achievements: string[];
+}
+
+/**
+ * A house member. Roll number is OPTIONAL — a name can be recorded long
+ * before the roll number is known, and linked to a student record later.
+ */
+export interface HouseMember {
+  id: string;
+  name: string | null;
+  /** null = "Not Assigned Yet" */
+  roll: number | null;
+  house: HouseId | null;
+  photo: string | null;
+  notes: string | null;
+}
+
+/** Editable text block shown on a public page (homepage, class info, yearbook…). */
+export interface ClassText {
+  id: string;
+  label: string;
+  value: string | null;
+}

@@ -8,15 +8,21 @@
 import { students as defaultStudents } from "@/data/students";
 import { houses as defaultHouses } from "@/data/houses";
 import { greenCabinet as defaultGreenCabinet } from "@/data/greenCabinet";
+import { teachers as defaultTeachers, principal as defaultPrincipal } from "@/data/teachers";
 import { achievements as defaultAchievements, timeline as defaultTimeline, gallery as defaultGallery, projects as defaultProjects, events as defaultEvents } from "@/data/content";
+import { classInfo } from "@/data/classInfo";
 import type {
   Achievement,
   ClassEvent,
+  ClassText,
   GalleryItem,
   GreenMember,
   House,
+  HouseMember,
+  Principal,
   Project,
   Student,
+  Teacher,
   TimelineEntry,
 } from "@/data/types";
 
@@ -33,9 +39,30 @@ export const defaultLeadership: LeadershipEntry[] = [
   { id: "class-teacher", role: "Class Teacher", name: "Rachna Ma'am", note: null },
 ];
 
+/** Editable page copy — homepage, class information and yearbook wording. */
+export const defaultClassText: ClassText[] = [
+  { id: "identity", label: "Home · identity line", value: classInfo.identity },
+  { id: "primaryConcept", label: "Home · headline concept", value: classInfo.primaryConcept },
+  { id: "secondaryConcept", label: "Home · quote strip", value: classInfo.secondaryConcept },
+  { id: "tertiaryConcept", label: "Home · statistics heading", value: classInfo.tertiaryConcept },
+  { id: "intro", label: "Home · introduction", value: classInfo.intro },
+  { id: "className", label: "Class name", value: classInfo.name },
+  { id: "stream", label: "Stream", value: classInfo.stream },
+  { id: "welcome", label: "Welcome message", value: null },
+  { id: "motto", label: "Class motto", value: null },
+  { id: "about", label: "About the class", value: null },
+  { id: "important", label: "Important information", value: null },
+  { id: "yearbookTitle", label: "Yearbook · title", value: null },
+  { id: "yearbookIntro", label: "Yearbook · introduction", value: null },
+  { id: "yearbookClosing", label: "Yearbook · closing message", value: null },
+];
+
 export interface ContentShape {
   students: Student[];
   houses: House[];
+  houseMembers: HouseMember[];
+  teachers: Teacher[];
+  principal: Principal[];
   greenCabinet: GreenMember[];
   leadership: LeadershipEntry[];
   achievements: Achievement[];
@@ -43,6 +70,7 @@ export interface ContentShape {
   gallery: GalleryItem[];
   projects: Project[];
   timeline: TimelineEntry[];
+  classText: ClassText[];
 }
 
 export type ContentKey = keyof ContentShape;
@@ -50,6 +78,9 @@ export type ContentKey = keyof ContentShape;
 export const contentKeys: ContentKey[] = [
   "students",
   "houses",
+  "houseMembers",
+  "teachers",
+  "principal",
   "greenCabinet",
   "leadership",
   "achievements",
@@ -57,11 +88,15 @@ export const contentKeys: ContentKey[] = [
   "gallery",
   "projects",
   "timeline",
+  "classText",
 ];
 
 export const defaultContent: ContentShape = {
   students: defaultStudents,
   houses: defaultHouses,
+  houseMembers: [],
+  teachers: defaultTeachers,
+  principal: defaultPrincipal,
   greenCabinet: defaultGreenCabinet,
   leadership: defaultLeadership,
   achievements: defaultAchievements,
@@ -69,11 +104,15 @@ export const defaultContent: ContentShape = {
   gallery: defaultGallery,
   projects: defaultProjects,
   timeline: defaultTimeline,
+  classText: defaultClassText,
 };
 
 export const contentLabels: Record<ContentKey, string> = {
   students: "Students",
   houses: "Houses",
+  houseMembers: "House Members",
+  teachers: "Teachers",
+  principal: "Principal",
   greenCabinet: "Green Cabinet",
   leadership: "Leadership",
   achievements: "Achievements",
@@ -81,6 +120,7 @@ export const contentLabels: Record<ContentKey, string> = {
   gallery: "Photos",
   projects: "Projects",
   timeline: "Timeline",
+  classText: "Class Information",
 };
 
 /** Validation of an incoming JSON document for one section. */
@@ -122,7 +162,20 @@ export function validateDocument(key: ContentKey, value: unknown): string[] {
     });
   }
 
-  if (["achievements", "events", "gallery", "projects", "timeline", "leadership"].includes(key)) {
+  if (
+    [
+      "achievements",
+      "events",
+      "gallery",
+      "projects",
+      "timeline",
+      "leadership",
+      "teachers",
+      "principal",
+      "houseMembers",
+      "classText",
+    ].includes(key)
+  ) {
     const ids = new Set<string>();
     value.forEach((raw, i) => {
       const item = raw as { id?: string };

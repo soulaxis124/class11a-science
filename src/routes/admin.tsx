@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { claimAdmin } from "@/lib/admin.functions";
-import { useSiteContent, siteContentQueryKey } from "@/hooks/useSiteContent";
+import { useSiteContent, siteContentQueryKey, useContentSection } from "@/hooks/useSiteContent";
 import {
   contentKeys,
   contentLabels,
@@ -19,7 +19,7 @@ import { NexusLogo } from "@/components/nexus/Logo";
 import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { houses } from "@/data/houses";
-import type { House, HouseColors, HouseId } from "@/data/types";
+import type { House, HouseColors, HouseId, Student } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
@@ -415,6 +415,7 @@ function SectionEditor({
   onSave: (key: ContentKey, rows: unknown[]) => Promise<boolean>;
 }) {
   const [draft, setDraft] = useState<Row[]>(() => structuredClone(rows));
+  const allStudents = useContentSection("students");
   const [jsonMode, setJsonMode] = useState(false);
   const imageFields: string[] = ["photo", "media", "image", "cover"];
   const [jsonText, setJsonText] = useState(() => JSON.stringify(rows, null, 2));
@@ -543,6 +544,27 @@ function SectionEditor({
                           ? ""
                           : String(value);
                       const long = field === "description" || field === "intro" || field === "quote";
+                      if (field === "house") {
+                        return (
+                          <label key={field} className="block">
+                            <span className="label-mono">house</span>
+                            <select
+                              value={typeof value === "string" ? value : ""}
+                              onChange={(e) =>
+                                setField(i, field, e.target.value === "" ? null : e.target.value)
+                              }
+                              className="mt-1.5 w-full rounded-lg border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            >
+                              <option value="">Not assigned yet</option>
+                              {houses.map((h) => (
+                                <option key={h.id} value={h.id}>
+                                  {h.name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        );
+                      }
                       if (imageFields.includes(field)) {
                         return (
                           <ImageField
@@ -582,6 +604,27 @@ function SectionEditor({
                         value={typeof row["photo"] === "string" ? (row["photo"] as string) : null}
                         onChange={(next) => setField(i, "photo", next)}
                         className="sm:col-span-2"
+                      />
+                    )}
+
+                    {sectionKey === "houseMembers" && (
+                      <StudentLinker
+                        students={allStudents}
+                        onLink={(student) =>
+                          setDraft((prev) =>
+                            prev.map((row, x) =>
+                              x === i
+                                ? {
+                                    ...row,
+                                    name: student.name,
+                                    roll: student.roll,
+                                    photo: student.photo,
+                                    house: student.house ?? row["house"] ?? null,
+                                  }
+                                : row,
+                            ),
+                          )
+                        }
                       />
                     )}
 
@@ -667,6 +710,86 @@ function BulkTools({
           }}
         />
       </label>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* link a house member to a student record                             */
+/* ------------------------------------------------------------------ */
+
+function StudentLinker({
+  students,
+  onLink,
+}: {
+  students: Student[];
+  onLink: (student: Student) => void;
+}) {
+  const [term, setTerm] = useState("");
+  const query = term.trim().toLowerCase();
+
+  const matches = query
+    ? students.filter(
+        (s) =>
+          String(s.roll) === query ||
+          String(s.roll).padStart(2, "0") === query ||
+          (s.name ?? "").toLowerCase().includes(query),
+      )
+    : [];
+
+  // Two students can legitimately share a first name — warn before linking.
+  const nameCounts = students.reduce<Record<string, number>>((acc, s) => {
+    const n = (s.name ?? "").trim().toLowerCase();
+    if (n) acc[n] = (acc[n] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <div className="sm:col-span-2 rounded-xl border border-border/70 p-3">
+      <span className="label-mono">Link to student</span>
+      <input
+        value={term}
+        placeholder="Search by name or roll number"
+        onChange={(e) => setTerm(e.target.value)}
+        className="mt-1.5 w-full rounded-lg border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      />
+      {query && !matches.length && (
+        <p className="mt-2 text-xs text-muted-foreground">No student matches that search.</p>
+      )}
+      {matches.length > 0 && (
+        <ul className="mt-2 max-h-52 space-y-1 overflow-auto">
+          {matches.map((s) => {
+            const duplicate = (nameCounts[(s.name ?? "").trim().toLowerCase()] ?? 0) > 1;
+            return (
+              <li key={s.roll}>
+                <button
+                  onClick={() => {
+                    onLink(s);
+                    setTerm("");
+                  }}
+                  className="flex w-full items-center justify-between gap-3 rounded-lg border border-border/70 px-3 py-2 text-left text-xs hover:bg-surface/60"
+                >
+                  <span>
+                    <span className="label-mono">
+                      {String(s.roll).padStart(2, "0")}
+                    </span>{" "}
+                    {s.name ?? "Name awaited"}
+                  </span>
+                  {duplicate && (
+                    <span className="text-[10px] uppercase tracking-[0.14em] text-destructive">
+                      duplicate name — check the roll number
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        Linking copies the name, roll number and photo from that student record. A member can also be
+        saved with a name only — the roll number stays “not assigned yet”.
+      </p>
     </div>
   );
 }

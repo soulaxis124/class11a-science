@@ -19,7 +19,7 @@ import { NexusLogo } from "@/components/nexus/Logo";
 import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { houses } from "@/data/houses";
-import { useHouseColors } from "@/lib/house-theme";
+import type { House, HouseColors, HouseId } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({

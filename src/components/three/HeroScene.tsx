@@ -1,6 +1,7 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useContentSection } from "@/hooks/useSiteContent";
 import {
   FOREST,
   GOLD,
@@ -176,7 +177,76 @@ function MoleculePlate({ position }: { position: [number, number, number] }) {
   );
 }
 
+
+/**
+ * Small circular student / teacher photos orbiting the nucleus.
+ * Renders nothing when no photos have been uploaded yet, so the plain
+ * electron orbits remain the fallback visual.
+ */
+function PhotoOrbit({ photos, radius = 2.45 }: { photos: string[]; radius?: number }) {
+  const group = useRef<THREE.Group>(null);
+  const meshes = useRef<(THREE.Mesh | null)[]>([]);
+
+  const textures = useMemo(() => {
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin("anonymous");
+    return photos.map((src) => {
+      const t = loader.load(src);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    });
+  }, [photos]);
+
+  useEffect(() => () => textures.forEach((t) => t.dispose()), [textures]);
+
+  useFrame((state, delta) => {
+    if (group.current) group.current.rotation.y += delta * 0.14;
+    // keep every photo facing the camera
+    for (const mesh of meshes.current) {
+      if (mesh) mesh.quaternion.copy(state.camera.quaternion);
+    }
+  });
+
+  if (!textures.length) return null;
+
+  return (
+    <group ref={group}>
+      {textures.map((tex, i) => {
+        const a = (i / textures.length) * Math.PI * 2;
+        return (
+          <group key={i} position={[Math.cos(a) * radius, Math.sin(a) * 0.6, Math.sin(a) * radius]}>
+            <mesh
+              ref={(m) => {
+                meshes.current[i] = m;
+              }}
+            >
+              <circleGeometry args={[0.3, 48]} />
+              <meshBasicMaterial map={tex} toneMapped={false} transparent />
+            </mesh>
+            <mesh rotation={[0, 0, 0]} position={[0, 0, -0.01]}>
+              <ringGeometry args={[0.3, 0.335, 48]} />
+              <meshBasicMaterial color={GOLD} transparent opacity={0.75} side={THREE.DoubleSide} />
+            </mesh>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
 export default function HeroScene() {
+  const students = useContentSection("students");
+  const teachers = useContentSection("teachers");
+
+  // Data-driven: at most 6 photos so the hero stays light on phones.
+  const photos = useMemo(() => {
+    const list = [
+      ...students.map((s) => s.photo),
+      ...teachers.map((t) => t.photo),
+    ].filter((p): p is string => typeof p === "string" && p.trim() !== "");
+    return list.slice(0, 6);
+  }, [students, teachers]);
+
   return (
     <NexusCanvas cameraPosition={[0, 0.4, 7.5]}>
       <fog attach="fog" args={["#12140f", 9, 26]} />
@@ -188,6 +258,7 @@ export default function HeroScene() {
         <Orbit tilt={[1.2, 0.3, 0]} speed={0.5} radius={2.1} />
         <Orbit tilt={[-0.8, 0.9, 0.4]} speed={0.36} radius={2.8} color={GOLD} />
         <Orbit tilt={[0.4, -1.1, 0.9]} speed={0.26} radius={3.5} />
+        <PhotoOrbit photos={photos} />
         <Helix />
         <Waveform />
         <MoleculePlate position={[-4.4, 0.5, -2]} />

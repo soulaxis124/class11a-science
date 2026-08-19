@@ -44,3 +44,18 @@ export function useContentSection<K extends ContentKey>(key: K): ContentShape[K]
   const { content } = useSiteContent();
   return content[key];
 }
+
+/**
+ * Editable page copy. `text("motto", "fallback")` returns the admin value when
+ * present, otherwise the fallback — so pages never render an empty block.
+ */
+export function useClassText() {
+  const rows = useContentSection("classText");
+  return useMemo(() => {
+    const map = new Map(rows.map((r) => [r.id, r.value] as const));
+    return (id: string, fallback = "") => {
+      const value = map.get(id);
+      return value && value.trim() !== "" ? value : fallback;
+    };
+  }, [rows]);
+}

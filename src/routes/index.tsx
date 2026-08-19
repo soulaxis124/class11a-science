@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Scene } from "@/components/three/Scene";
 import { classInfo, classStats } from "@/data/classInfo";
+import { useClassText } from "@/hooks/useSiteContent";
 import { campusLocations } from "@/data/navigation";
 import { GlassPanel, StatCounter } from "@/components/nexus/primitives";
 import { NexusIcon } from "@/components/nexus/icons";
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [entered, setEntered] = useState(false);
+  const text = useClassText();
 
   return (
     <main className="relative z-10">
@@ -41,7 +43,7 @@ function Index() {
           }}
         />
         <div className="relative mx-auto max-w-3xl text-center">
-          <p className="animate-fade-up label-mono">{classInfo.identity}</p>
+          <p className="animate-fade-up label-mono">{text("identity", classInfo.identity)}</p>
           <h1
             className="animate-fade-up mt-5 font-display text-6xl font-semibold uppercase leading-[0.95] tracking-tight text-glow sm:text-8xl"
             style={{ animationDelay: "80ms" }}
@@ -53,13 +55,13 @@ function Index() {
             className="animate-fade-up mt-6 font-display text-base tracking-wide text-foreground/85 sm:text-lg"
             style={{ animationDelay: "160ms" }}
           >
-            {classInfo.primaryConcept}
+            {text("primaryConcept", classInfo.primaryConcept)}
           </p>
           <p
             className="animate-fade-up mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground"
             style={{ animationDelay: "220ms" }}
           >
-            {classInfo.intro}
+            {text("intro", classInfo.intro)}
           </p>
           <div
             className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-3"
@@ -130,7 +132,7 @@ function Index() {
           <div className="text-center">
             <p className="label-mono">Class Statistics</p>
             <h2 className="mt-3 font-display text-3xl font-semibold uppercase tracking-tight">
-              {classInfo.tertiaryConcept}
+              {text("tertiaryConcept", classInfo.tertiaryConcept)}
             </h2>
           </div>
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -145,7 +147,7 @@ function Index() {
       <section className="px-6 pb-24">
         <GlassPanel className="mx-auto max-w-4xl px-8 py-12 text-center">
           <p className="font-display text-2xl font-medium tracking-tight sm:text-3xl">
-            “{classInfo.secondaryConcept}”
+            “{text("secondaryConcept", classInfo.secondaryConcept)}”
           </p>
           <p className="mt-4 text-sm text-muted-foreground">
             A digital universe built for our class — its people, its houses, its science and its

@@ -30,26 +30,31 @@ function make(
   };
 }
 
+/**
+ * Official house colors: Chanakya = Yellow, Valmiki = Red,
+ * Patanjali = Green, Dronacharya = Blue. Secondary/accent are shades of the
+ * same identity. These are the defaults; admins may change them.
+ */
 export const houses: House[] = [
   make("chanakya", "Chanakya", "◈", {
-    primary: "#c9a54e",
-    secondary: "#8c6f2e",
-    accent: "#f0dda4",
+    primary: "#e8c344",
+    secondary: "#a8860f",
+    accent: "#f8e39a",
   }),
   make("valmiki", "Valmiki", "◆", {
-    primary: "#8d5560",
-    secondary: "#5e343d",
-    accent: "#dfa9b3",
+    primary: "#d64545",
+    secondary: "#8e2323",
+    accent: "#f0a5a5",
   }),
   make("patanjali", "Patanjali", "❖", {
-    primary: "#5f9e79",
-    secondary: "#33604a",
-    accent: "#a8d8bb",
+    primary: "#3fa96b",
+    secondary: "#1f6b41",
+    accent: "#9be0b8",
   }),
   make("dronacharya", "Dronacharya", "◇", {
-    primary: "#8a97a8",
-    secondary: "#5a6674",
-    accent: "#d3dbe4",
+    primary: "#3b82d9",
+    secondary: "#1f4f8f",
+    accent: "#a3c8f5",
   }),
 ];
 

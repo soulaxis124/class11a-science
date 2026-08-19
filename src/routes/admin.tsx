@@ -375,7 +375,7 @@ function Dashboard({ email }: { email: string }) {
                   </GlassPanel>
                 ))}
               </div>
-              <HouseColorPanel />
+              <HouseColorPanel rows={content.houses} onSave={save} />
             </div>
           ) : (
             <SectionEditor

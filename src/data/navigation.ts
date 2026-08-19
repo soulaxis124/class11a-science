@@ -20,6 +20,13 @@ export const navItems: NavItem[] = [
     code: "ST-33",
     blurb: "Student hub · 33 nodes",
   },
+  {
+    label: "Teachers",
+    to: "/teachers",
+    icon: "teacher",
+    code: "TR-03",
+    blurb: "Subject teachers & principal",
+  },
   { label: "Houses", to: "/houses", icon: "houses", code: "HS-04", blurb: "Four house towers" },
   {
     label: "Green Cabinet",

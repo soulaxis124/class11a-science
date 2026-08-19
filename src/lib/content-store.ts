@@ -162,7 +162,20 @@ export function validateDocument(key: ContentKey, value: unknown): string[] {
     });
   }
 
-  if (["achievements", "events", "gallery", "projects", "timeline", "leadership"].includes(key)) {
+  if (
+    [
+      "achievements",
+      "events",
+      "gallery",
+      "projects",
+      "timeline",
+      "leadership",
+      "teachers",
+      "principal",
+      "houseMembers",
+      "classText",
+    ].includes(key)
+  ) {
     const ids = new Set<string>();
     value.forEach((raw, i) => {
       const item = raw as { id?: string };

@@ -52,6 +52,11 @@ function HousePage() {
   const house = houses.find((h) => h.id === loadedHouse.id) ?? loadedHouse;
   const accent = `var(${house.colorVar})`;
   const members = students.filter((s) => s.house === house.id);
+  const houseMembers = useContentSection("houseMembers");
+  // Members recorded by name only (roll number not assigned yet).
+  const unlinked = houseMembers.filter(
+    (m) => m.house === house.id && !members.some((s) => s.roll === m.roll),
+  );
 
   return (
     <PageShell>
@@ -62,7 +67,7 @@ function HousePage() {
         }}
       />
       <SectionHero
-        eyebrow={`${house.emblem} House Tower`}
+        eyebrow="House Tower"
         title={house.name}
         subtitle={house.motto ?? "Motto to be added"}
         description={house.description ?? "House details will appear here once provided."}
@@ -96,9 +101,7 @@ function HousePage() {
           </GlassPanel>
 
           <GlassPanel className="flex flex-col items-center justify-center p-8 text-center">
-            <span className="font-display text-6xl" style={{ color: accent }}>
-              {house.emblem}
-            </span>
+            <HouseCrest id={house.id} className="size-24" />
             <p className="label-mono mt-5">House Points</p>
             <p className="font-display text-5xl font-semibold tabular-nums" style={{ color: accent }}>
               {house.points}
@@ -110,11 +113,27 @@ function HousePage() {
         </div>
       </Section>
 
-      <Section title="House Members" hint={`${members.length} assigned`}>
-        {members.length ? (
+      <Section
+        title="House Members"
+        hint={`${members.length + unlinked.length} recorded`}
+      >
+        {members.length || unlinked.length ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {members.map((s) => (
-              <StudentCard key={s.roll} student={s} />
+            {members.map((s, i) => (
+              <Reveal key={s.roll} delay={i * 60}>
+                <StudentCard student={s} />
+              </Reveal>
+            ))}
+            {unlinked.map((m, i) => (
+              <Reveal key={m.id} delay={(members.length + i) * 60}>
+                <PersonCard
+                  name={m.name}
+                  role={m.roll ? `Roll ${String(m.roll).padStart(2, "0")}` : "Roll not assigned yet"}
+                  photo={m.photo}
+                  note={m.notes}
+                  accent={accent}
+                />
+              </Reveal>
             ))}
           </div>
         ) : (

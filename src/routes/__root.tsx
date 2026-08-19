@@ -123,12 +123,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SiteFrame />
+    </QueryClientProvider>
+  );
+}
+
+/** Lives inside QueryClientProvider so content-driven hooks can read the cache. */
+function SiteFrame() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // Publishes the configurable house palette to CSS variables site-wide.
   useHouseColorSync();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <AmbientBackground />
       <Navigation />
       <RouteWarp routeKey={pathname}>
@@ -136,7 +146,7 @@ function RootComponent() {
         <Outlet />
       </RouteWarp>
       <Footer />
-    </QueryClientProvider>
+    </>
   );
 }
 

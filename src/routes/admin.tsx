@@ -737,9 +737,10 @@ function HouseColorPanel({
         </div>
         <button
           onClick={reset}
-          className="rounded-xl border border-border px-3 py-2 text-xs hover:bg-surface/60"
+          disabled={saving}
+          className="rounded-xl border border-border px-3 py-2 text-xs hover:bg-surface/60 disabled:opacity-60"
         >
-          Reset to defaults
+          {saving ? "Saving…" : "Reset to defaults"}
         </button>
       </div>
 

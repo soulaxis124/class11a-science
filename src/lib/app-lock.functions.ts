@@ -115,7 +115,7 @@ export const updateLockSettings = createServerFn({ method: "POST" })
       .maybeSingle();
     const salt = row?.salt ?? randomUUID();
 
-    const patch: Record<string, unknown> = { updated_at: new Date().toISOString(), salt };
+    const patch: Record<string, unknown> = { id: true, updated_at: new Date().toISOString(), salt };
     if (data.lockEnabled !== undefined) patch["lock_enabled"] = data.lockEnabled;
     if (data.pinEnabled !== undefined) patch["pin_enabled"] = data.pinEnabled;
     if (data.passwordEnabled !== undefined) patch["password_enabled"] = data.passwordEnabled;
@@ -129,7 +129,7 @@ export const updateLockSettings = createServerFn({ method: "POST" })
     if (data.newPin || data.newPassword || data.logoutAllSessions)
       patch["session_epoch"] = new Date().toISOString();
 
-    const { error } = await supabaseAdmin.from("app_lock").upsert({ id: true, ...patch });
+    const { error } = await supabaseAdmin.from("app_lock").upsert(patch as { id: boolean; salt: string });
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });

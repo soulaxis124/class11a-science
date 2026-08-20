@@ -466,7 +466,7 @@ function SectionEditor({
   const allStudents = useContentSection("students");
   const [jsonMode, setJsonMode] = useState(false);
   const imageFields: string[] = ["photo", "media", "image", "cover"];
-  const [jsonText, setJsonText] = useState(() => JSON.stringify(rows, null, 2));
+  const [jsonText, setJsonText] = useState(() => JSON.stringify(draftRows ?? rows, null, 2));
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [open, setOpen] = useState<number | null>(0);
 
@@ -567,6 +567,16 @@ function SectionEditor({
           </button>
         </div>
       </div>
+
+      {draftRows && (
+        <p className="mt-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-2.5 text-xs">
+          You have an unpublished draft for this section. It is only visible in the{" "}
+          <a href="/?preview=1" target="_blank" rel="noreferrer" className="underline">
+            draft preview
+          </a>
+          . Press “Publish live” to make it public.
+        </p>
+      )}
 
       {jsonMode ? (
         <div className="mt-4">

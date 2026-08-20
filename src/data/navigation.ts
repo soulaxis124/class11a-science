@@ -56,6 +56,7 @@ export const navItems: NavItem[] = [
   { label: "Science Lab", to: "/science-lab", icon: "lab", code: "LB-12", blurb: "Virtual laboratory" },
   { label: "Calendar", to: "/calendar", icon: "calendar", code: "CA-13", blurb: "Activity center" },
   { label: "Yearbook", to: "/yearbook", icon: "yearbook", code: "YB-14", blurb: "Yearbook vault" },
+  { label: "Search", to: "/search", icon: "students", code: "SR-16", blurb: "Find any student" },
   { label: "About", to: "/about", icon: "about", code: "AB-15", blurb: "Website creator" },
 ];
 

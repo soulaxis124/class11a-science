@@ -9,6 +9,9 @@ export interface ContentRow {
   updated_at: string;
 }
 
+/** Prefix used for admin drafts that are not live on the public site yet. */
+export const DRAFT_PREFIX = "draft:";
+
 async function fetchContent(): Promise<ContentRow[]> {
   const { data, error } = await supabase.from("site_content").select("key, data, updated_at");
   if (error) throw error;
@@ -17,7 +20,13 @@ async function fetchContent(): Promise<ContentRow[]> {
 
 export const siteContentQueryKey = ["site_content"] as const;
 
-/** All class content: static defaults merged with anything the admin has saved. */
+/** True when the visitor asked for the unpublished preview (`?preview=1`). */
+function isPreviewMode() {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("preview") === "1";
+}
+
+/** All class content: static defaults merged with anything the admin has published. */
 export function useSiteContent() {
   const query = useQuery({
     queryKey: siteContentQueryKey,
@@ -25,18 +34,42 @@ export function useSiteContent() {
     staleTime: 30_000,
   });
 
+  const rows = useMemo(() => query.data ?? [], [query.data]);
+
   const content = useMemo<ContentShape>(() => {
     const merged: ContentShape = { ...defaultContent };
-    for (const row of query.data ?? []) {
-      if (Array.isArray(row.data) && row.key in merged) {
+    const preview = isPreviewMode();
+    for (const row of rows) {
+      if (!Array.isArray(row.data)) continue;
+      if (row.key in merged) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (merged as any)[row.key as ContentKey] = row.data;
       }
     }
+    if (preview) {
+      for (const row of rows) {
+        if (!Array.isArray(row.data) || !row.key.startsWith(DRAFT_PREFIX)) continue;
+        const key = row.key.slice(DRAFT_PREFIX.length);
+        if (key in merged) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (merged as any)[key as ContentKey] = row.data;
+        }
+      }
+    }
     return merged;
-  }, [query.data]);
+  }, [rows]);
 
-  return { content, isLoading: query.isLoading, refetch: query.refetch };
+  /** Draft documents keyed by section — used by the admin control room. */
+  const drafts = useMemo(() => {
+    const map: Partial<Record<ContentKey, unknown[]>> = {};
+    for (const row of rows) {
+      if (!Array.isArray(row.data) || !row.key.startsWith(DRAFT_PREFIX)) continue;
+      map[row.key.slice(DRAFT_PREFIX.length) as ContentKey] = row.data as unknown[];
+    }
+    return map;
+  }, [rows]);
+
+  return { content, drafts, rows, isLoading: query.isLoading, refetch: query.refetch };
 }
 
 /** Convenience accessor for one section. */

@@ -5,7 +5,12 @@ import { useServerFn } from "@tanstack/react-start";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { claimAdmin } from "@/lib/admin.functions";
-import { useSiteContent, siteContentQueryKey, useContentSection } from "@/hooks/useSiteContent";
+import {
+  DRAFT_PREFIX,
+  siteContentQueryKey,
+  useContentSection,
+  useSiteContent,
+} from "@/hooks/useSiteContent";
 import {
   contentKeys,
   contentLabels,
@@ -272,27 +277,51 @@ function ClaimCard({ email, onClaimed }: { email: string; onClaimed: () => void 
 
 type Row = Record<string, unknown>;
 
+export type SaveMode = "draft" | "publish";
+
 function Dashboard({ email }: { email: string }) {
-  const { content } = useSiteContent();
+  const { content, drafts } = useSiteContent();
   const queryClient = useQueryClient();
   const [section, setSection] = useState<ContentKey | "overview">("overview");
   const [status, setStatus] = useState<string | null>(null);
 
-  async function save(key: ContentKey, rows: unknown[]) {
+  async function save(key: ContentKey, rows: unknown[], mode: SaveMode = "publish") {
     const errors = validateDocument(key, rows);
     if (errors.length) {
       setStatus(`Not saved — ${errors[0]}`);
       return false;
     }
+    const target = mode === "draft" ? `${DRAFT_PREFIX}${key}` : key;
     const { error } = await supabase
       .from("site_content")
-      .upsert({ key, data: rows as never, updated_at: new Date().toISOString() }, { onConflict: "key" });
+      .upsert(
+        { key: target, data: rows as never, updated_at: new Date().toISOString() },
+        { onConflict: "key" },
+      );
     if (error) {
       setStatus(`Not saved — ${error.message}`);
       return false;
     }
+    if (mode === "publish") {
+      await supabase.from("site_content").delete().eq("key", `${DRAFT_PREFIX}${key}`);
+    }
     await queryClient.invalidateQueries({ queryKey: siteContentQueryKey });
-    setStatus(`${contentLabels[key]} saved and published to the website.`);
+    setStatus(
+      mode === "draft"
+        ? `${contentLabels[key]} draft saved — preview it before publishing.`
+        : `${contentLabels[key]} published to the website.`,
+    );
+    return true;
+  }
+
+  async function discardDraft(key: ContentKey) {
+    const { error } = await supabase.from("site_content").delete().eq("key", `${DRAFT_PREFIX}${key}`);
+    if (error) {
+      setStatus(`Could not discard draft — ${error.message}`);
+      return false;
+    }
+    await queryClient.invalidateQueries({ queryKey: siteContentQueryKey });
+    setStatus(`${contentLabels[key]} draft discarded — the live version is unchanged.`);
     return true;
   }
 
@@ -324,7 +353,15 @@ function Dashboard({ email }: { email: string }) {
           <h1 className="mt-1 font-display text-3xl font-semibold">Class 11-A content</h1>
           <p className="mt-1 text-sm text-muted-foreground">Signed in as {email}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <a
+            href="/?preview=1"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border border-border px-4 py-2 text-sm hover:bg-surface/60"
+          >
+            Preview drafts
+          </a>
           <BulkTools content={content} onSave={save} />
           <button
             onClick={() => supabase.auth.signOut()}
@@ -357,6 +394,11 @@ function Dashboard({ email }: { email: string }) {
                   )}
                 >
                   {key === "overview" ? "Dashboard" : contentLabels[key]}
+                  {key !== "overview" && drafts[key as ContentKey] && (
+                    <span className="ml-1.5 align-middle text-xs text-accent" title="Unpublished draft">
+                      ●
+                    </span>
+                  )}
                 </button>
               </li>
             ))}
@@ -382,7 +424,9 @@ function Dashboard({ email }: { email: string }) {
               key={section}
               sectionKey={section}
               rows={content[section] as unknown as Row[]}
+              draftRows={(drafts[section] as Row[] | undefined) ?? null}
               onSave={save}
+              onDiscardDraft={discardDraft}
             />
           )}
         </div>
@@ -408,13 +452,17 @@ function blankFrom(rows: Row[], key: ContentKey): Row {
 function SectionEditor({
   sectionKey,
   rows,
+  draftRows,
   onSave,
+  onDiscardDraft,
 }: {
   sectionKey: ContentKey;
   rows: Row[];
-  onSave: (key: ContentKey, rows: unknown[]) => Promise<boolean>;
+  draftRows?: Row[] | null;
+  onSave: (key: ContentKey, rows: unknown[], mode?: SaveMode) => Promise<boolean>;
+  onDiscardDraft?: (key: ContentKey) => Promise<boolean>;
 }) {
-  const [draft, setDraft] = useState<Row[]>(() => structuredClone(rows));
+  const [draft, setDraft] = useState<Row[]>(() => structuredClone(draftRows ?? rows));
   const allStudents = useContentSection("students");
   const [jsonMode, setJsonMode] = useState(false);
   const imageFields: string[] = ["photo", "media", "image", "cover"];
@@ -441,6 +489,22 @@ function SectionEditor({
     setDraft((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
   }
 
+  /** Save the current editor state either as a draft or straight to the live site. */
+  function commit(mode: SaveMode) {
+    if (jsonMode) {
+      try {
+        const parsed = JSON.parse(jsonText) as Row[];
+        setJsonError(null);
+        setDraft(parsed);
+        return onSave(sectionKey, parsed, mode);
+      } catch {
+        setJsonError("That is not valid JSON.");
+        return Promise.resolve(false);
+      }
+    }
+    return onSave(sectionKey, draft, mode);
+  }
+
 
   return (
     <GlassPanel className="p-5">
@@ -465,24 +529,32 @@ function SectionEditor({
             </button>
           )}
           <button
-            onClick={() => {
-              if (jsonMode) {
-                try {
-                  const parsed = JSON.parse(jsonText) as Row[];
-                  setJsonError(null);
-                  setDraft(parsed);
-                  void onSave(sectionKey, parsed);
-                } catch {
-                  setJsonError("That is not valid JSON.");
-                }
-              } else {
-                void onSave(sectionKey, draft);
-              }
-            }}
+            onClick={() => void commit("draft")}
+            className="rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface/60"
+          >
+            Save draft
+          </button>
+          <button
+            onClick={() => void commit("publish")}
             className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
           >
-            Save &amp; publish
+            Publish live
           </button>
+          {draftRows && onDiscardDraft && (
+            <button
+              onClick={() => {
+                void onDiscardDraft(sectionKey).then((ok) => {
+                  if (ok) {
+                    setDraft(structuredClone(rows));
+                    setJsonText(JSON.stringify(rows, null, 2));
+                  }
+                });
+              }}
+              className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-surface/60"
+            >
+              Discard draft
+            </button>
+          )}
           <button
             onClick={() => {
               const fresh = structuredClone(defaultContent[sectionKey]) as unknown as Row[];

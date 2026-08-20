@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Navigation, Footer } from "@/components/nexus/Navigation";
 import { AmbientBackground } from "@/components/nexus/AmbientBackground";
 import { useHouseColorSync } from "@/lib/house-theme";
+import { LockGate } from "@/components/nexus/LockScreen";
 
 function NotFoundComponent() {
   return (

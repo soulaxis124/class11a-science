@@ -21,6 +21,7 @@ import { Route as GreenCabinetRouteImport } from './routes/green-cabinet'
 import { Route as MonitorsRouteImport } from './routes/monitors'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ScienceLabRouteImport } from './routes/science-lab'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as TeacherRouteImport } from './routes/teacher'
 import { Route as TeachersRouteImport } from './routes/teachers'
 import { Route as TimelineRouteImport } from './routes/timeline'
@@ -91,6 +92,11 @@ const ScienceLabRoute = ScienceLabRouteImport.update({
   path: '/science-lab',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeacherRoute = TeacherRouteImport.update({
   id: '/teacher',
   path: '/teacher',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/monitors': typeof MonitorsRoute
   '/projects': typeof ProjectsRoute
   '/science-lab': typeof ScienceLabRoute
+  '/search': typeof SearchRoute
   '/teacher': typeof TeacherRoute
   '/teachers': typeof TeachersRoute
   '/timeline': typeof TimelineRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/monitors': typeof MonitorsRoute
   '/projects': typeof ProjectsRoute
   '/science-lab': typeof ScienceLabRoute
+  '/search': typeof SearchRoute
   '/teacher': typeof TeacherRoute
   '/teachers': typeof TeachersRoute
   '/timeline': typeof TimelineRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/monitors': typeof MonitorsRoute
   '/projects': typeof ProjectsRoute
   '/science-lab': typeof ScienceLabRoute
+  '/search': typeof SearchRoute
   '/teacher': typeof TeacherRoute
   '/teachers': typeof TeachersRoute
   '/timeline': typeof TimelineRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/monitors'
     | '/projects'
     | '/science-lab'
+    | '/search'
     | '/teacher'
     | '/teachers'
     | '/timeline'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/monitors'
     | '/projects'
     | '/science-lab'
+    | '/search'
     | '/teacher'
     | '/teachers'
     | '/timeline'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/monitors'
     | '/projects'
     | '/science-lab'
+    | '/search'
     | '/teacher'
     | '/teachers'
     | '/timeline'
@@ -292,6 +304,7 @@ export interface RootRouteChildren {
   MonitorsRoute: typeof MonitorsRoute
   ProjectsRoute: typeof ProjectsRoute
   ScienceLabRoute: typeof ScienceLabRoute
+  SearchRoute: typeof SearchRoute
   TeacherRoute: typeof TeacherRoute
   TeachersRoute: typeof TeachersRoute
   TimelineRoute: typeof TimelineRoute
@@ -389,6 +402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScienceLabRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/teacher': {
       id: '/teacher'
       path: '/teacher'
@@ -468,6 +488,7 @@ const rootRouteChildren: RootRouteChildren = {
   MonitorsRoute: MonitorsRoute,
   ProjectsRoute: ProjectsRoute,
   ScienceLabRoute: ScienceLabRoute,
+  SearchRoute: SearchRoute,
   TeacherRoute: TeacherRoute,
   TeachersRoute: TeachersRoute,
   TimelineRoute: TimelineRoute,

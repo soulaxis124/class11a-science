@@ -64,7 +64,7 @@ export function LockCard({
   onUnlocked,
   previewOnly = false,
 }: {
-  settings?: Settings;
+  settings?: Settings | undefined;
   onUnlocked: (epoch: string) => void;
   previewOnly?: boolean;
 }) {

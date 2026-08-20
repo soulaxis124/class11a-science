@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { labSections } from "@/data/content";
-import { GlassPanel, PageShell, PlaceholderBadge, Section, SectionHero } from "@/components/nexus/primitives";
+import { GlassPanel, PageShell, PhotoSlot, PlaceholderBadge, Section, SectionHero } from "@/components/nexus/primitives";
 import { Scene } from "@/components/three/Scene";
+import { useContentSection } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/science-lab")({
   head: () => ({
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/science-lab")({
 });
 
 function ScienceLabPage() {
+  const labSections = useContentSection("labSections");
   return (
     <PageShell>
       <div className="relative">
@@ -50,15 +51,19 @@ function ScienceLabPage() {
                 </div>
               </div>
               <ul className="mt-5 space-y-2">
-                {s.entries.map((e, i) => (
+                {s.entries.map((e) => (
                   <li
-                    key={i}
-                    className="flex items-center justify-between rounded-xl border border-border/60 px-4 py-3"
+                    key={e.id}
+                    className="flex items-center gap-3 rounded-xl border border-border/60 p-3"
                   >
-                    <span className="text-sm">
-                      {e.title ?? <span className="text-muted-foreground">Experiment slot</span>}
+                    <span className="size-12 shrink-0 overflow-hidden rounded-lg border border-border/60">
+                      <PhotoSlot src={e.media} alt={e.title ?? "Experiment"} />
                     </span>
-                    <PlaceholderBadge label="Awaited" />
+                    <span className="min-w-0 flex-1 text-sm">
+                      <span className="block">{e.title ?? <span className="text-muted-foreground">Experiment slot</span>}</span>
+                      {e.note && <span className="mt-1 block text-xs text-muted-foreground">{e.note}</span>}
+                    </span>
+                    {!e.title && <PlaceholderBadge label="Awaited" />}
                   </li>
                 ))}
               </ul>

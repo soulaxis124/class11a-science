@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { classInfo, classStats, monitors, teacher } from "@/data/classInfo";
 import { displayName } from "@/data/students";
-import { GlassPanel, PageShell, Section, SectionHero, StatCounter } from "@/components/nexus/primitives";
+import { GlassPanel, PageShell, PhotoSlot, Section, SectionHero, StatCounter } from "@/components/nexus/primitives";
 import { useContentSection, useClassText } from "@/hooks/useSiteContent";
+import { HouseCrest } from "@/components/nexus/HouseCrest";
 
 export const Route = createFileRoute("/yearbook")({
   head: () => ({
@@ -24,6 +25,7 @@ function YearbookPage() {
   const houses = useContentSection("houses");
   const students = useContentSection("students");
   const greenCabinet = useContentSection("greenCabinet");
+  const yearbookEntries = useContentSection("yearbookEntries");
   const text = useClassText();
   return (
     <PageShell>
@@ -72,15 +74,30 @@ function YearbookPage() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {houses.map((h) => (
             <GlassPanel key={h.id} className="p-5 text-center">
-              <span className="text-2xl" style={{ color: `var(${h.colorVar})` }}>
-                {h.emblem}
-              </span>
+              <HouseCrest id={h.id} className="mx-auto size-12" />
               <p className="mt-2 font-display text-sm uppercase tracking-[0.16em]">{h.name}</p>
               <p className="label-mono mt-1">{h.points} pts</p>
             </GlassPanel>
           ))}
         </div>
       </Section>
+
+      {yearbookEntries.length > 0 && (
+        <Section title="Memory Pages" hint={`${yearbookEntries.length} entries`}>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {yearbookEntries.map((entry) => (
+              <GlassPanel key={entry.id} className="overflow-hidden p-0">
+                <div className="aspect-[16/10]"><PhotoSlot src={entry.media} alt={entry.title ?? "Yearbook memory"} /></div>
+                <div className="p-5">
+                  <p className="label-mono">{entry.date ?? "Memory"}</p>
+                  <h2 className="mt-2 font-display text-lg">{entry.title ?? "Untitled memory"}</h2>
+                  {entry.description && <p className="mt-2 text-sm text-muted-foreground">{entry.description}</p>}
+                </div>
+              </GlassPanel>
+            ))}
+          </div>
+        </Section>
+      )}
 
       <Section title="Green Cabinet" hint="12 members">
         <div className="flex flex-wrap gap-2">

@@ -9,7 +9,7 @@ import { students as defaultStudents } from "@/data/students";
 import { houses as defaultHouses } from "@/data/houses";
 import { greenCabinet as defaultGreenCabinet } from "@/data/greenCabinet";
 import { teachers as defaultTeachers, principal as defaultPrincipal } from "@/data/teachers";
-import { achievements as defaultAchievements, timeline as defaultTimeline, gallery as defaultGallery, projects as defaultProjects, events as defaultEvents } from "@/data/content";
+import { achievements as defaultAchievements, timeline as defaultTimeline, gallery as defaultGallery, projects as defaultProjects, events as defaultEvents, labSections as defaultLabSections } from "@/data/content";
 import { classInfo } from "@/data/classInfo";
 import type {
   Achievement,
@@ -19,11 +19,13 @@ import type {
   GreenMember,
   House,
   HouseMember,
+  LabSection,
   Principal,
   Project,
   Student,
   Teacher,
   TimelineEntry,
+  YearbookEntry,
 } from "@/data/types";
 
 export interface LeadershipEntry {
@@ -71,6 +73,8 @@ export interface ContentShape {
   projects: Project[];
   timeline: TimelineEntry[];
   classText: ClassText[];
+  labSections: LabSection[];
+  yearbookEntries: YearbookEntry[];
 }
 
 export type ContentKey = keyof ContentShape;
@@ -89,6 +93,8 @@ export const contentKeys: ContentKey[] = [
   "projects",
   "timeline",
   "classText",
+  "labSections",
+  "yearbookEntries",
 ];
 
 export const defaultContent: ContentShape = {
@@ -105,6 +111,8 @@ export const defaultContent: ContentShape = {
   projects: defaultProjects,
   timeline: defaultTimeline,
   classText: defaultClassText,
+  labSections: defaultLabSections,
+  yearbookEntries: [],
 };
 
 export const contentLabels: Record<ContentKey, string> = {
@@ -121,6 +129,8 @@ export const contentLabels: Record<ContentKey, string> = {
   projects: "Projects",
   timeline: "Timeline",
   classText: "Class Information",
+  labSections: "Science Lab",
+  yearbookEntries: "Yearbook Entries",
 };
 
 /** Validation of an incoming JSON document for one section. */
@@ -174,6 +184,8 @@ export function validateDocument(key: ContentKey, value: unknown): string[] {
       "principal",
       "houseMembers",
       "classText",
+      "labSections",
+      "yearbookEntries",
     ].includes(key)
   ) {
     const ids = new Set<string>();

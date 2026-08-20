@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_lock: {
+        Row: {
+          id: boolean
+          lock_enabled: boolean
+          logo_url: string | null
+          password_enabled: boolean
+          password_hash: string | null
+          pin_enabled: boolean
+          pin_hash: string | null
+          salt: string
+          session_epoch: string
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          lock_enabled?: boolean
+          logo_url?: string | null
+          password_enabled?: boolean
+          password_hash?: string | null
+          pin_enabled?: boolean
+          pin_hash?: string | null
+          salt: string
+          session_epoch?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          lock_enabled?: boolean
+          logo_url?: string | null
+          password_enabled?: boolean
+          password_hash?: string | null
+          pin_enabled?: boolean
+          pin_hash?: string | null
+          salt?: string
+          session_epoch?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           data: Json

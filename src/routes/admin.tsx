@@ -23,6 +23,7 @@ import { GlassPanel } from "@/components/nexus/primitives";
 import { NexusLogo } from "@/components/nexus/Logo";
 import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
+import { AppLockPanel } from "@/components/nexus/AppLockPanel";
 import { houses } from "@/data/houses";
 import type { House, HouseColors, HouseId, Student } from "@/data/types";
 import { cn } from "@/lib/utils";
@@ -282,7 +283,7 @@ export type SaveMode = "draft" | "publish";
 function Dashboard({ email }: { email: string }) {
   const { content, drafts } = useSiteContent();
   const queryClient = useQueryClient();
-  const [section, setSection] = useState<ContentKey | "overview">("overview");
+  const [section, setSection] = useState<ContentKey | "overview" | "appLock">("overview");
   const [status, setStatus] = useState<string | null>(null);
 
   async function save(key: ContentKey, rows: unknown[], mode: SaveMode = "publish") {
@@ -381,7 +382,7 @@ function Dashboard({ email }: { email: string }) {
       <div className="mt-8 grid gap-6 lg:grid-cols-[220px_1fr]">
         <nav aria-label="Admin sections" className="h-max lg:sticky lg:top-24">
           <ul className="flex flex-wrap gap-1.5 lg:flex-col">
-            {(["overview", ...contentKeys] as const).map((key) => (
+            {(["overview", ...contentKeys, "appLock"] as const).map((key) => (
               <li key={key}>
                 <button
                   onClick={() => setSection(key)}
@@ -393,8 +394,8 @@ function Dashboard({ email }: { email: string }) {
                       : "text-muted-foreground hover:bg-surface/60",
                   )}
                 >
-                  {key === "overview" ? "Dashboard" : contentLabels[key]}
-                  {key !== "overview" && drafts[key as ContentKey] && (
+                  {key === "overview" ? "Dashboard" : key === "appLock" ? "App Lock" : contentLabels[key]}
+                  {key !== "overview" && key !== "appLock" && drafts[key as ContentKey] && (
                     <span className="ml-1.5 align-middle text-xs text-accent" title="Unpublished draft">
                       ●
                     </span>
@@ -419,6 +420,8 @@ function Dashboard({ email }: { email: string }) {
               </div>
               <HouseColorPanel rows={content.houses} onSave={save} />
             </div>
+          ) : section === "appLock" ? (
+            <AppLockPanel onStatus={setStatus} />
           ) : (
             <SectionEditor
               key={section}

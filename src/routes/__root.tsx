@@ -138,7 +138,7 @@ function SiteFrame() {
   useHouseColorSync();
 
   return (
-    <>
+    <LockGate>
       <AmbientBackground />
       <Navigation />
       <RouteWarp routeKey={pathname}>
@@ -146,7 +146,7 @@ function SiteFrame() {
         <Outlet />
       </RouteWarp>
       <Footer />
-    </>
+    </LockGate>
   );
 }
 

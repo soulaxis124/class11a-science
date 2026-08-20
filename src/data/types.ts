@@ -63,6 +63,8 @@ export interface GreenMember {
   name: string | null;
   roll: number | null;
   responsibility: string | null;
+  role: string | null;
+  photo: string | null;
 }
 
 export interface Achievement {
@@ -114,7 +116,15 @@ export interface LabSection {
   name: string;
   symbol: string;
   tagline: string;
-  entries: { title: string | null; note: string | null }[];
+  entries: { id: string; title: string | null; note: string | null; media: string | null }[];
+}
+
+export interface YearbookEntry {
+  id: string;
+  title: string | null;
+  description: string | null;
+  date: string | null;
+  media: string | null;
 }
 
 /** Subject teacher — fully admin managed. */

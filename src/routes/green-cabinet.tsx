@@ -87,7 +87,7 @@ function GreenCabinetPage() {
               style={{ borderColor: "color-mix(in oklab, var(--eco) 22%, transparent)" }}
             >
               <div className="relative aspect-[4/5]">
-                <PhotoSlot src={null} alt={m.name ?? `Member ${m.slot}`} accent="var(--eco)" />
+                <PhotoSlot src={m.photo} alt={m.name ?? `Member ${m.slot}`} accent="var(--eco)" />
                 <span className="absolute left-3 top-3 rounded-lg border border-white/15 bg-black/55 px-2 py-1 font-mono text-[0.6rem] tracking-[0.16em] text-white/90 backdrop-blur-md">
                   {String(m.slot).padStart(2, "0")}
                 </span>
@@ -98,6 +98,9 @@ function GreenCabinetPage() {
                     <p className="truncate font-display text-sm font-medium">{m.name}</p>
                     <p className="label-mono mt-1.5">
                       {m.roll ? `Roll ${String(m.roll).padStart(2, "0")}` : "Roll TBA"}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {m.role ?? m.responsibility ?? "Green Cabinet Member"}
                     </p>
                   </>
                 ) : (

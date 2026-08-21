@@ -25,7 +25,7 @@ import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { AppLockPanel } from "@/components/nexus/AppLockPanel";
 import { houses } from "@/data/houses";
-import type { House, HouseColors, HouseId, Student } from "@/data/types";
+import type { House, HouseColors, HouseId, LabSection, Student } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({

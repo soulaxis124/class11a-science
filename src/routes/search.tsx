@@ -145,7 +145,7 @@ function SearchPage() {
         key: `event-${e.id}`,
         group: "Events",
         title: e.title ?? "Event",
-        sub: [e.date, e.venue].filter(Boolean).join(" · "),
+        sub: [e.date, e.type].filter(Boolean).join(" · "),
         href: "/events",
         extra: [e.description],
       }),

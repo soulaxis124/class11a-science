@@ -80,9 +80,9 @@ function SearchPage() {
         key: `house-member-${m.id ?? i}`,
         group: "House members",
         title: m.name ?? "Member",
-        sub: `${(m.house ? houseName.get(m.house) : null) ?? "House"}${m.role ? ` · ${m.role}` : ""}`,
+        sub: `${(m.house ? houseName.get(m.house) : null) ?? "House"}${m.notes ? ` · ${m.notes}` : ""}`,
         href: m.house ? `/houses/${m.house}` : "/houses",
-        extra: [m.roll, m.role],
+        extra: [m.roll, m.notes],
       }),
     );
 

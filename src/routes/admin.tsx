@@ -650,6 +650,16 @@ function SectionEditor({
                           </label>
                         );
                       }
+                      if (sectionKey === "labSections" && field === "entries") {
+                        return (
+                          <LabEntriesEditor
+                            key={field}
+                            entries={(value as LabSection["entries"]) ?? []}
+                            onChange={(next) => setField(i, field, next)}
+                            className="sm:col-span-2"
+                          />
+                        );
+                      }
                       if (imageFields.includes(field)) {
                         return (
                           <ImageField

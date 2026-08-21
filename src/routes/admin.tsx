@@ -25,7 +25,7 @@ import { ImageField } from "@/components/nexus/ImageField";
 import { HouseCrest } from "@/components/nexus/HouseCrest";
 import { AppLockPanel } from "@/components/nexus/AppLockPanel";
 import { houses } from "@/data/houses";
-import type { House, HouseColors, HouseId, Student } from "@/data/types";
+import type { House, HouseColors, HouseId, LabSection, Student } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
@@ -650,6 +650,16 @@ function SectionEditor({
                           </label>
                         );
                       }
+                      if (sectionKey === "labSections" && field === "entries") {
+                        return (
+                          <LabEntriesEditor
+                            key={field}
+                            entries={(value as LabSection["entries"]) ?? []}
+                            onChange={(next) => setField(i, field, next)}
+                            className="sm:col-span-2"
+                          />
+                        );
+                      }
                       if (imageFields.includes(field)) {
                         return (
                           <ImageField
@@ -733,6 +743,93 @@ function SectionEditor({
     </GlassPanel>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* nested lab entries editor — each discipline holds experiments       */
+/* ------------------------------------------------------------------ */
+
+function LabEntriesEditor({
+  entries,
+  onChange,
+  className,
+}: {
+  entries: LabSection["entries"];
+  onChange: (next: LabSection["entries"]) => void;
+  className?: string;
+}) {
+  function setEntry(i: number, field: "title" | "note" | "media", value: string | null) {
+    onChange(entries.map((e, x) => (x === i ? { ...e, [field]: value } : e)));
+  }
+
+  function addEntry() {
+    onChange([
+      ...entries,
+      { id: `lab-${Date.now()}`, title: null, note: null, media: null },
+    ]);
+  }
+
+  function removeEntry(i: number) {
+    onChange(entries.filter((_, x) => x !== i));
+  }
+
+  return (
+    <div className={cn("rounded-xl border border-border/60 p-3", className)}>
+      <div className="flex items-center justify-between">
+        <span className="label-mono">entries · experiments</span>
+        <button
+          onClick={addEntry}
+          className="rounded-lg border border-border px-2.5 py-1 text-xs hover:bg-surface/60"
+        >
+          + Add experiment
+        </button>
+      </div>
+      {entries.length === 0 ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          No experiments yet — add the first one.
+        </p>
+      ) : (
+        <ul className="mt-3 space-y-2">
+          {entries.map((e, i) => (
+            <li key={e.id ?? i} className="rounded-lg border border-border/60 p-3">
+              <div className="grid gap-2">
+                <label className="block">
+                  <span className="label-mono">title</span>
+                  <input
+                    value={e.title ?? ""}
+                    onChange={(ev) => setEntry(i, "title", ev.target.value || null)}
+                    className="mt-1 w-full rounded-lg border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  />
+                </label>
+                <label className="block">
+                  <span className="label-mono">note</span>
+                  <textarea
+                    rows={2}
+                    value={e.note ?? ""}
+                    onChange={(ev) => setEntry(i, "note", ev.target.value || null)}
+                    className="mt-1 w-full rounded-lg border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  />
+                </label>
+                <ImageField
+                  label="media (photo / thumbnail)"
+                  folder="lab"
+                  value={e.media}
+                  onChange={(next) => setEntry(i, "media", next)}
+                />
+              </div>
+              <button
+                onClick={() => removeEntry(i)}
+                className="mt-2 rounded-lg border border-destructive/50 px-2.5 py-1 text-xs text-destructive"
+              >
+                Remove experiment
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 
 /* ------------------------------------------------------------------ */
 /* bulk import / export                                                */

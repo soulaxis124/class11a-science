@@ -166,8 +166,8 @@ function SearchPage() {
       push({
         key: `photo-${g.id}`,
         group: "Photos",
-        title: g.caption ?? "Photo",
-        sub: g.album ?? "Gallery",
+        title: g.title ?? "Photo",
+        sub: g.category ?? "Gallery",
         href: "/gallery",
       }),
     );

@@ -962,6 +962,32 @@ function StudentLinker({
   return (
     <div className="sm:col-span-2 rounded-xl border border-border/70 p-3">
       <span className="label-mono">Link to student</span>
+      {linked && (
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs">
+          <span>
+            Linked student: <strong>{linked.name ?? "Name awaited"}</strong> · Roll No.{" "}
+            {String(linked.roll).padStart(2, "0")}
+          </span>
+          <span className="flex gap-2">
+            <a
+              href={`/students/${linked.roll}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-md border border-border px-2 py-1 hover:bg-surface/60"
+            >
+              View student
+            </a>
+            {onUnlink && (
+              <button
+                onClick={onUnlink}
+                className="rounded-md border border-destructive/50 px-2 py-1 text-destructive"
+              >
+                Unlink
+              </button>
+            )}
+          </span>
+        </div>
+      )}
       <input
         value={term}
         placeholder="Search by name or roll number"

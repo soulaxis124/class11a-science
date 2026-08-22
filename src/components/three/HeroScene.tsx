@@ -186,11 +186,7 @@ export default function HeroScene() {
       <ScienceGrid y={-3.4} />
       <PointerParallax>
         <Nucleus />
-        {photoUrls.length > 0 ? (
-          <PhotoRing urls={photoUrls} />
-        ) : (
-          <Orbit tilt={[1.2, 0.3, 0]} speed={0.5} radius={2.1} />
-        )}
+        <Orbit tilt={[1.2, 0.3, 0]} speed={0.5} radius={2.1} />
         <Orbit tilt={[-0.8, 0.9, 0.4]} speed={0.36} radius={2.8} color={GOLD} />
         <Orbit tilt={[0.4, -1.1, 0.9]} speed={0.26} radius={3.5} />
         <Helix />

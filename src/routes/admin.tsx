@@ -702,22 +702,37 @@ function SectionEditor({
                       />
                     )}
 
-                    {sectionKey === "houseMembers" && (
+                    {linkableSections.includes(sectionKey) && (
                       <StudentLinker
                         students={allStudents}
+                        linkedRoll={
+                          typeof row["studentRoll"] === "number"
+                            ? (row["studentRoll"] as number)
+                            : typeof row["roll"] === "number"
+                              ? (row["roll"] as number)
+                              : null
+                        }
+                        onUnlink={() =>
+                          setDraft((prev) =>
+                            prev.map((r, x) => (x === i ? { ...r, studentRoll: null } : r)),
+                          )
+                        }
                         onLink={(student) =>
                           setDraft((prev) =>
-                            prev.map((row, x) =>
-                              x === i
-                                ? {
-                                    ...row,
-                                    name: student.name,
-                                    roll: student.roll,
-                                    photo: student.photo,
-                                    house: student.house ?? row["house"] ?? null,
-                                  }
-                                : row,
-                            ),
+                            prev.map((r, x) => {
+                              if (x !== i) return r;
+                              const next: Row = { ...r, studentRoll: student.roll };
+                              // Inherit the student record where the section stores those fields.
+                              if ("name" in r) next["name"] = student.name;
+                              if ("roll" in r) next["roll"] = student.roll;
+                              if ("holder" in r) next["holder"] = student.name;
+                              if ("team" in r && !r["team"]) next["team"] = student.name;
+                              if ("photo" in r || "media" in r) {
+                                if ("photo" in r) next["photo"] = student.photo;
+                              }
+                              if ("house" in r) next["house"] = student.house ?? r["house"] ?? null;
+                              return next;
+                            }),
                           )
                         }
                       />

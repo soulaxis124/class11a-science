@@ -915,15 +915,33 @@ function BulkTools({
 /* link a house member to a student record                             */
 /* ------------------------------------------------------------------ */
 
+/** Sections whose records may point at an existing student record. */
+const linkableSections: ContentKey[] = [
+  "houseMembers",
+  "greenCabinet",
+  "leadership",
+  "achievements",
+  "events",
+  "projects",
+  "gallery",
+  "yearbookEntries",
+  "timeline",
+];
+
 function StudentLinker({
   students,
+  linkedRoll,
   onLink,
+  onUnlink,
 }: {
   students: Student[];
+  linkedRoll?: number | null;
   onLink: (student: Student) => void;
+  onUnlink?: () => void;
 }) {
   const [term, setTerm] = useState("");
   const query = term.trim().toLowerCase();
+  const linked = students.find((s) => s.roll === linkedRoll) ?? null;
 
   const matches = query
     ? students.filter(

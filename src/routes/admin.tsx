@@ -702,22 +702,37 @@ function SectionEditor({
                       />
                     )}
 
-                    {sectionKey === "houseMembers" && (
+                    {linkableSections.includes(sectionKey) && (
                       <StudentLinker
                         students={allStudents}
+                        linkedRoll={
+                          typeof row["studentRoll"] === "number"
+                            ? (row["studentRoll"] as number)
+                            : typeof row["roll"] === "number"
+                              ? (row["roll"] as number)
+                              : null
+                        }
+                        onUnlink={() =>
+                          setDraft((prev) =>
+                            prev.map((r, x) => (x === i ? { ...r, studentRoll: null } : r)),
+                          )
+                        }
                         onLink={(student) =>
                           setDraft((prev) =>
-                            prev.map((row, x) =>
-                              x === i
-                                ? {
-                                    ...row,
-                                    name: student.name,
-                                    roll: student.roll,
-                                    photo: student.photo,
-                                    house: student.house ?? row["house"] ?? null,
-                                  }
-                                : row,
-                            ),
+                            prev.map((r, x) => {
+                              if (x !== i) return r;
+                              const next: Row = { ...r, studentRoll: student.roll };
+                              // Inherit the student record where the section stores those fields.
+                              if ("name" in r) next["name"] = student.name;
+                              if ("roll" in r) next["roll"] = student.roll;
+                              if ("holder" in r) next["holder"] = student.name;
+                              if ("team" in r && !r["team"]) next["team"] = student.name;
+                              if ("photo" in r || "media" in r) {
+                                if ("photo" in r) next["photo"] = student.photo;
+                              }
+                              if ("house" in r) next["house"] = student.house ?? r["house"] ?? null;
+                              return next;
+                            }),
                           )
                         }
                       />
@@ -900,15 +915,33 @@ function BulkTools({
 /* link a house member to a student record                             */
 /* ------------------------------------------------------------------ */
 
+/** Sections whose records may point at an existing student record. */
+const linkableSections: ContentKey[] = [
+  "houseMembers",
+  "greenCabinet",
+  "leadership",
+  "achievements",
+  "events",
+  "projects",
+  "gallery",
+  "yearbookEntries",
+  "timeline",
+];
+
 function StudentLinker({
   students,
+  linkedRoll,
   onLink,
+  onUnlink,
 }: {
   students: Student[];
+  linkedRoll?: number | null;
   onLink: (student: Student) => void;
+  onUnlink?: () => void;
 }) {
   const [term, setTerm] = useState("");
   const query = term.trim().toLowerCase();
+  const linked = students.find((s) => s.roll === linkedRoll) ?? null;
 
   const matches = query
     ? students.filter(
@@ -929,6 +962,32 @@ function StudentLinker({
   return (
     <div className="sm:col-span-2 rounded-xl border border-border/70 p-3">
       <span className="label-mono">Link to student</span>
+      {linked && (
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs">
+          <span>
+            Linked student: <strong>{linked.name ?? "Name awaited"}</strong> · Roll No.{" "}
+            {String(linked.roll).padStart(2, "0")}
+          </span>
+          <span className="flex gap-2">
+            <a
+              href={`/students/${linked.roll}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-md border border-border px-2 py-1 hover:bg-surface/60"
+            >
+              View student
+            </a>
+            {onUnlink && (
+              <button
+                onClick={onUnlink}
+                className="rounded-md border border-destructive/50 px-2 py-1 text-destructive"
+              >
+                Unlink
+              </button>
+            )}
+          </span>
+        </div>
+      )}
       <input
         value={term}
         placeholder="Search by name or roll number"

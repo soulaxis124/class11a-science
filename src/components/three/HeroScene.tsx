@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useContentSection } from "@/hooks/useSiteContent";
+
 import {
   FOREST,
   GOLD,
@@ -177,51 +177,7 @@ function MoleculePlate({ position }: { position: [number, number, number] }) {
   );
 }
 
-/** Circular student / teacher photos orbiting the nucleus. */
-function PhotoRing({ urls, radius = 2.45 }: { urls: string[]; radius?: number }) {
-  const ref = useRef<THREE.Group>(null);
-  const textures = useMemo(() => {
-    const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin("anonymous");
-    return urls.map((u) => loader.load(u));
-  }, [urls]);
-
-  useFrame((_, delta) => {
-    if (ref.current) ref.current.rotation.y += delta * 0.18;
-  });
-
-  return (
-    <group ref={ref} rotation={[0.24, 0, 0]}>
-      {textures.map((tex, i) => {
-        const a = (i / textures.length) * Math.PI * 2;
-        return (
-          <group key={i} position={[Math.cos(a) * radius, Math.sin(a) * 0.5, Math.sin(a) * radius]}>
-            <mesh>
-              <circleGeometry args={[0.3, 40]} />
-              <meshBasicMaterial map={tex} toneMapped={false} transparent />
-            </mesh>
-            <mesh position={[0, 0, -0.01]}>
-              <ringGeometry args={[0.3, 0.34, 40]} />
-              <meshBasicMaterial color={SAGE} transparent opacity={0.75} />
-            </mesh>
-          </group>
-        );
-      })}
-    </group>
-  );
-}
-
 export default function HeroScene() {
-  const students = useContentSection("students");
-  const teachers = useContentSection("teachers");
-  const photoUrls = useMemo(() => {
-    const all = [
-      ...teachers.map((t) => t.photo),
-      ...students.map((s) => s.photo),
-    ].filter((p): p is string => typeof p === "string" && p.trim() !== "");
-    return Array.from(new Set(all)).slice(0, 12);
-  }, [students, teachers]);
-
   return (
     <NexusCanvas cameraPosition={[0, 0.4, 7.5]}>
       <fog attach="fog" args={["#12140f", 9, 26]} />
@@ -230,11 +186,7 @@ export default function HeroScene() {
       <ScienceGrid y={-3.4} />
       <PointerParallax>
         <Nucleus />
-        {photoUrls.length > 0 ? (
-          <PhotoRing urls={photoUrls} />
-        ) : (
-          <Orbit tilt={[1.2, 0.3, 0]} speed={0.5} radius={2.1} />
-        )}
+        <Orbit tilt={[1.2, 0.3, 0]} speed={0.5} radius={2.1} />
         <Orbit tilt={[-0.8, 0.9, 0.4]} speed={0.36} radius={2.8} color={GOLD} />
         <Orbit tilt={[0.4, -1.1, 0.9]} speed={0.26} radius={3.5} />
         <Helix />
